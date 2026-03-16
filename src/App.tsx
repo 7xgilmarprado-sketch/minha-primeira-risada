@@ -9,11 +9,11 @@ import { Play, Pause, Volume2, VolumeX, Heart, Music, Sparkles } from 'lucide-re
 
 // Nomes dos arquivos que você deve colocar na pasta "public"
 const BABY_IMAGES = [
-  "/karla-1.jpg",
-  "/karla-2.jpg",
-  "/karla-3.jpg",
-  "/karla-4.jpg",
-  "/karla-5.jpg",
+  "/karla-1.jpeg",
+  "/karla-2.jpeg",
+  "/karla-3.jpeg",
+  "/karla-4.jpeg",
+  "/karla-5.jpeg",
 ];
 
 export default function App() {
@@ -21,9 +21,19 @@ export default function App() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [imageErrors, setImageErrors] = useState<Record<number, boolean>>({});
+  const [audioError, setAudioError] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  // Auto-advance images every 6 seconds
+  const handleImageError = (index: number) => {
+    console.error(`Erro ao carregar imagem: ${BABY_IMAGES[index]}`);
+    setImageErrors(prev => ({ ...prev, [index]: true }));
+  };
+
+  const handleAudioError = (e: any) => {
+    console.error("Erro ao carregar áudio:", e);
+    setAudioError("Não foi possível carregar o arquivo 'risada.mp3'. Verifique se ele está na pasta 'public'.");
+  };
   useEffect(() => {
     if (!hasStarted) return;
     const interval = setInterval(() => {
@@ -128,16 +138,25 @@ export default function App() {
               <div className="absolute inset-0 bg-purple-200 rounded-[4rem] -rotate-3 scale-105" />
               <div className="relative w-full h-full bg-white rounded-[4rem] overflow-hidden border-8 border-white shadow-2xl">
                 <AnimatePresence mode="wait">
-                  <motion.img
-                    key={currentImageIndex}
-                    src={BABY_IMAGES[currentImageIndex]}
-                    initial={{ opacity: 0, x: 50 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -50 }}
-                    transition={{ duration: 0.8, ease: "circOut" }}
-                    className="w-full h-full object-cover"
-                    referrerPolicy="no-referrer"
-                  />
+                  {imageErrors[currentImageIndex] ? (
+                    <div className="w-full h-full flex flex-col items-center justify-center bg-pink-50 text-pink-300 p-8 text-center">
+                      <Heart size={48} className="mb-4" />
+                      <p className="text-sm font-medium">Imagem não encontrada</p>
+                      <p className="text-[10px] opacity-60 mt-1">{BABY_IMAGES[currentImageIndex]}</p>
+                    </div>
+                  ) : (
+                    <motion.img
+                      key={currentImageIndex}
+                      src={BABY_IMAGES[currentImageIndex]}
+                      initial={{ opacity: 0, x: 50 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -50 }}
+                      transition={{ duration: 0.8, ease: "circOut" }}
+                      className="w-full h-full object-cover"
+                      referrerPolicy="no-referrer"
+                      onError={() => handleImageError(currentImageIndex)}
+                    />
+                  )}
                 </AnimatePresence>
               </div>
               
@@ -199,7 +218,18 @@ export default function App() {
               ref={audioRef}
               loop
               src="/risada.mp3"
+              onError={handleAudioError}
             />
+
+            {audioError && (
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-4 p-3 bg-red-50 text-red-500 text-[10px] rounded-xl text-center max-w-[200px]"
+              >
+                {audioError}
+              </motion.div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
