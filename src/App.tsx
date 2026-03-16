@@ -45,12 +45,17 @@ export default function App() {
   const startApp = () => {
     setHasStarted(true);
     setIsPlaying(true);
-    // Audio will be played via useEffect or directly here if possible
-    setTimeout(() => {
-      if (audioRef.current) {
-        audioRef.current.play().catch(console.error);
-      }
-    }, 100);
+    
+    // Tenta reproduzir o áudio imediatamente após a interação do usuário
+    if (audioRef.current) {
+      audioRef.current.play().catch((err) => {
+        console.error("Erro ao iniciar áudio:", err);
+        // Se falhar, tentamos novamente em um pequeno delay
+        setTimeout(() => {
+          audioRef.current?.play().catch(console.error);
+        }, 300);
+      });
+    }
   };
 
   const togglePlay = () => {
@@ -213,14 +218,6 @@ export default function App() {
               </div>
             </div>
 
-            {/* Áudio local da risada */}
-            <audio 
-              ref={audioRef}
-              loop
-              src="/risada.mp3"
-              onError={handleAudioError}
-            />
-
             {audioError && (
               <motion.div 
                 initial={{ opacity: 0, y: 10 }}
@@ -233,6 +230,14 @@ export default function App() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Áudio local da risada - Movido para fora para garantir que o ref esteja sempre pronto */}
+      <audio 
+        ref={audioRef}
+        loop
+        src="/risada.mp3"
+        onError={handleAudioError}
+      />
 
       {/* Global Floating Sparkles */}
       <div className="fixed inset-0 pointer-events-none">
