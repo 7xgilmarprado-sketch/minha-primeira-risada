@@ -7,13 +7,13 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Play, Pause, Volume2, VolumeX, Heart, Music, Sparkles } from 'lucide-react';
 
-// Images provided by the user (using placeholders for now)
+// Nomes dos arquivos que você deve colocar na pasta "public"
 const BABY_IMAGES = [
-  "https://picsum.photos/seed/karla1/800/1000",
-  "https://picsum.photos/seed/karla2/800/1000",
-  "https://picsum.photos/seed/karla3/800/1000",
-  "https://picsum.photos/seed/karla4/800/1000",
-  "https://picsum.photos/seed/karla5/800/1000",
+  "/karla-1.jpg",
+  "/karla-2.jpg",
+  "/karla-3.jpg",
+  "/karla-4.jpg",
+  "/karla-5.jpg",
 ];
 
 export default function App() {
@@ -194,11 +194,11 @@ export default function App() {
               </div>
             </div>
 
-            {/* Hidden Audio */}
+            {/* Áudio local da risada */}
             <audio 
               ref={audioRef}
               loop
-              src="https://www.soundjay.com/human/baby-laugh-01.mp3"
+              src="/risada.mp3"
             />
           </motion.div>
         )}
